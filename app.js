@@ -8,6 +8,12 @@ const app = express();
 console.log("App initialized with PORT_FRONTEND:", process.env.PORT_FRONTEND);
 console.log("Gemini initialized with GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "****" + process.env.GEMINI_API_KEY.slice(-4) : "Not Set");
 app.use(cors());
+
+app.use(cors({
+  origin: "https://finanalytics-frontend-app1-1000076376022.northamerica-northeast2.run.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 app.use("/api", uploadRoutes);
 //console.log("Initializing openai Service...*****" +
