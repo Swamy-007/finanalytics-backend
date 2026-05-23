@@ -18,7 +18,7 @@ app.use(express.json());
 //app.use(cors());
 
 app.use(cors({
-  origin: ["https://finanalytics-frontend-app1-1000076376022.northamerica-northeast2.run.app","http://localhost:5173"],
+  origin: ["https://finanalytics-frontend-1000076376022.northamerica-northeast2.run.app","http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
