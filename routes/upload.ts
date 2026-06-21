@@ -3,6 +3,9 @@ import type { Request, Response, NextFunction } from "express";
 import multer from "multer";
 import { processStatement } from "../controllers/statementController.js";
 
+import verifyGoogleToken from "../authmiddleware.js";  
+
+
 const router = express.Router();
 
 const upload = multer({
