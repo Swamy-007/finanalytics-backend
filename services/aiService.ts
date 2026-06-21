@@ -1,49 +1,35 @@
-import OpenAI from "openai";
-import { GoogleGenAI } from "@google/genai";
 import "dotenv/config";
-import { text } from "stream/consumers";
 
-let openai: OpenAI | undefined;
-let googleGenAI: GoogleGenAI | undefined;
+import axios from 'axios';
 
-//console.log("OpenAI openai Service..."+openai);
-//console.log("GoogleGenAI googleGenAI Service..."+googleGenAI);
+const invokeUrl = "https://integrate.api.nvidia.com/v1/chat/completions";
+const stream = false;
 
-const getOpenAI = (): OpenAI => {
-console.log("Initializing openai Service...");
- const apiKey = process.env.OPENAI_API_KEY;
-  console.log("$$$$$$Using OpenAI API Key:", apiKey ? "****" + apiKey.slice(-4) : "Not Set");
-
-  if (!openai) {
-   
-    if (!apiKey) {
-      throw new Error(
-        "***********OPENAI_API_KEY is required to use the AI services. Set it in your environment before starting the server."
-      );
-    }
-
-    openai = new OpenAI({ apiKey });
-  }
-  return openai;
+const headers = {
+  Authorization: `Bearer ${process.env.NVIDIA_API_KEY}`,
+  Accept: stream ? "text/event-stream" : "application/json"
 };
 
-const getGemini = (): GoogleGenAI => {
-console.log("Initializing Gemini Service...");
- const apiKey = process.env.GEMINI_API_KEY;
-  //console.log("$$$$$$Using Gemini API Key:", apiKey ? "****" + apiKey.slice(-4) : "Not Set");
+const prompt_nvidia = `
+Extract credit card transactions and handle parse errors gracefully.
+Apply category based on description ex: AplPay KROGER LIVONIA MI 09/15 $45.67 => category: Groceries
+Unexpected tokens should be treated as parse errors.    
+Don't read Personal info like name, account number, etc. Skip invalid transactions and return an empty array if none are found.
+Handle various formats and return a JSON array with: date, description, amount, category.
+Return ONLY a valid JSON array.
+`;
 
-  if (!googleGenAI) {
-   
-    if (!apiKey) {
-      throw new Error(
-        "**********API_KEY is required to use the AI services. Set it in your environment before starting the server."
-      );
-    }
-
-    googleGenAI = new GoogleGenAI({ apiKey });
-  }
-  return googleGenAI;
+const payload = {
+  model: "google/gemma-4-31b-it",
+  messages: [{ role: "user", content: prompt_nvidia }],
+  max_tokens: 16384,
+  temperature: 1.0,
+  top_p: 0.95,
+  stream,
+  chat_template_kwargs: { enable_thinking: true },
 };
+
+
 
 export type Transaction = {
   date: string;
@@ -57,35 +43,37 @@ export const extractTransactionsAI = async (
 ): Promise<Transaction[]> => {
   const prompt = `
 Extract credit card transactions and handle parse errors gracefully.
-apply category based on description ex:AplPay KROGER LIVONIA MI 09/15 $45.67 => category: Groceries
-Unexpected token should be treated as parse errors.    
-don't read Personal info like name, account number, etc. Skip invalid transactions and return empty array if none found.
-handle various formats and return a JSON array with:
-skil invalid transactions and return empty array if none found.
-Return JSON array:
-date, description, amount, category
+Apply category based on description ex: AplPay KROGER LIVONIA MI 09/15 $45.67 => category: Groceries
+Unexpected tokens should be treated as parse errors.    
+Don't read Personal info like name, account number, etc. Skip invalid transactions and return an empty array if none are found.
+Handle various formats and return a JSON array with: date, description, amount, category.
+Return ONLY a valid JSON array.
 `;
 
-/*  const res = await getOpenAI().chat.completions.create({
-    model: "gpt-4o-mini",
+  const requestPayload = {
+    model: "google/gemma-4-31b-it",
     messages: [{ role: "user", content: prompt + text }],
-  }); 
-   const content = res.choices[0]?.message?.content ?? "[]";
-  return JSON.parse(content);*/
-  
-const response = await getGemini().models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents:prompt + text }
-  );
-  console.log("response length  :", response.text?""+response.text.length:"No text in response");
+    max_tokens: 16384,
+    temperature: 1.0,
+    top_p: 0.95,
+    stream: false,
+    chat_template_kwargs: { enable_thinking: true },
+  };
 
-  var responseText1 = response.text || "";
-  const cleaned = responseText1.replace(/```json/gi, '').replace(/```/g, '') .trim();
+  try {
+    const response = await axios.post(invokeUrl, requestPayload, {
+      headers: headers,
+      responseType: 'json'
+    });
 
-  console.log("Cleaned response text:");
+    const responseText = response.data.choices?.[0]?.message?.content || "";
+    const cleaned = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
 
- return response.text ? JSON.parse(cleaned) : [];
- 
+    return cleaned ? JSON.parse(cleaned) : [];
+  } catch (error) {
+    console.error("Failed to call NVIDIA API:", error);
+    return [];
+  }
 };
 
 export const generateInsights = async (
@@ -93,28 +81,33 @@ export const generateInsights = async (
 ): Promise<string> => {
   const prompt = `
 Analyze transactions and give:
-- you are a financial assistant that provides insights based on credit card transactions
-- top categories
-- saving tips
-- unusual spending
-- prediction of next month spending based on current month trends
-- don't include current credit card monthly payments if any
+- You are a financial assistant providing insights based on credit card transactions.
+- Top categories
+- Saving tips
+- Unusual spending
+- Prediction of next month's spending based on current month trends.
+- Don't include current credit card monthly payments if any.
 `;
-/*
-  const res = await getOpenAI().chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "user", content: prompt + JSON.stringify(transactions) },
-    ],
-  });
 
-  return res.choices[0]?.message?.content ?? "";
-}; */
+  const requestPayload = {
+    model: "google/gemma-4-31b-it",
+    messages: [{ role: "user", content: prompt + JSON.stringify(transactions) }],
+    max_tokens: 16384,
+    temperature: 1.0,
+    top_p: 0.95,
+    stream: false,
+    chat_template_kwargs: { enable_thinking: true },
+  };
 
-const response = await getGemini().models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: prompt + JSON.stringify(transactions) }
-  );
-  //console.log("Insights response received if length:", response.text?.length, no text in);
-  return response.text || "";
-}
+  try {
+    const response = await axios.post(invokeUrl, requestPayload, {
+      headers: headers,
+      responseType: 'json'
+    });
+
+    return response.data.choices?.[0]?.message?.content || "";
+  } catch (error) {
+    console.error("Failed to call NVIDIA API:", error);
+    return "";
+  }
+};
