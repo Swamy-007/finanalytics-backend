@@ -3,6 +3,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import uploadRoutes from "./routes/upload.js";
+import apiRoutes from "./routes/apiRoutes.js";
 
 import verifyGoogleToken from "./authmiddleware.js";  
 
@@ -41,7 +42,12 @@ app.post("/health",verifyGoogleToken, async (req, res) => {
 console.log("App initialized with PORT_FRONTEND:", process.env.PORT_FRONTEND);
 
 app.use("/api", uploadRoutes);
+app.use("/api", apiRoutes);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Give sockets 130 s — just over the 120 s AI timeout so the SDK always
+// fires first and sends a proper error JSON, not a dropped connection.
+server.setTimeout(130_000);
