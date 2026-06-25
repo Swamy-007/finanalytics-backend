@@ -1,0 +1,135 @@
+{
+  "users": {
+    "subrahmanyam2@gmail.com": {
+      "cases": []
+    },
+    "test1@test.com": {
+      "cases": [
+        {
+          "id": "case_1782355084423_0wl2z",
+          "productId": "prod_high_yield_savings",
+          "status": "Recommended",
+          "reasoning": "To maximize returns on cash and build an emergency fund",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-25T02:38:04.423Z"
+        },
+        {
+          "id": "case_1782355084423_mjdfp",
+          "productId": "prod_growth_index_fund",
+          "status": "Recommended",
+          "reasoning": "To start building a long-term investment portfolio for wealth accumulation",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-25T02:38:04.423Z"
+        },
+        {
+          "id": "case_1782355084423_c94x7",
+          "productId": "prod_critical_illness_insurance",
+          "status": "Recommended",
+          "reasoning": "To protect against major illnesses and secure your financial future",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-25T02:38:04.423Z"
+        }
+      ],
+      "profile": {
+        "firstName": "test",
+        "lastName": "test22",
+        "address": "1234 test drive",
+        "phone": "1231231234",
+        "email": "test1@test.com",
+        "ageRange": "26-35",
+        "familyMembers": [],
+        "dependents": []
+      },
+      "financialData": {
+        "assets": [
+          {
+            "name": "acct",
+            "type": "savings",
+            "value": 1000
+          }
+        ],
+        "liabilities": [],
+        "monthlyCreditCardBills": 0,
+        "monthlySavings": 0,
+        "insuranceExpenses": 0,
+        "otherRecurringCommitments": 0
+      },
+      "aiAnalysis": {
+        "score": 80,
+        "debtRatio": 0,
+        "savingsRatio": 0,
+        "gaps": [
+          "Lack of insurance coverage",
+          "No investment portfolio",
+          "No emergency fund",
+          "No retirement savings",
+          "No credit card or loan debt management strategy"
+        ],
+        "advice": "Consider allocating a portion of your savings to an emergency fund, explore low-cost investment options, and evaluate insurance products to protect against unforeseen events. Since you have no debt, focus on building wealth and securing your financial future.",
+        "updatedAt": "2026-06-25T02:38:04.423Z"
+      }
+    }
+  },
+  "products": [
+    {
+      "id": "prod_high_yield_savings",
+      "name": "Apex High Yield Savings",
+      "type": "savings",
+      "provider": "Apex Bank",
+      "description": "5.2% APY savings account with no monthly maintenance fees to maximize your return on cash.",
+      "benefits": [
+        "5.2% Annual Percentage Yield",
+        "No monthly fees",
+        "FDIC Insured up to $250k"
+      ]
+    },
+    {
+      "id": "prod_premium_health_insurance",
+      "name": "Shield Pro Premium Family Health",
+      "type": "insurance",
+      "provider": "Shield Insurance",
+      "description": "Low-deductible comprehensive family health plan covering spouse, children, and eligible dependents.",
+      "benefits": [
+        "$500 individual deductible",
+        "Full spouse & dependent coverage",
+        "Dental, Vision, and Prescription benefits included"
+      ]
+    },
+    {
+      "id": "prod_debt_consolidation_loan",
+      "name": "Pathfinder Debt Consolidation Loan",
+      "type": "loan",
+      "provider": "Pathfinder Finance",
+      "description": "Consolidate your high-interest credit card debt into a single low monthly payment.",
+      "benefits": [
+        "6.9% Fixed APR for qualified borrowers",
+        "No prepayment penalties",
+        "Flexible terms from 24 to 60 months"
+      ]
+    },
+    {
+      "id": "prod_growth_index_fund",
+      "name": "Vanguard Growth Index Portfolio",
+      "type": "investment",
+      "provider": "Vanguard",
+      "description": "Low-cost index fund tracking large-cap growth stocks, optimized for long-term wealth accumulation.",
+      "benefits": [
+        "Industry-low 0.04% expense ratio",
+        "Broad diversification across tech & growth leaders",
+        "Historical average annual return of 10.2%"
+      ]
+    },
+    {
+      "id": "prod_critical_illness_insurance",
+      "name": "LifeGuard Critical Illness Rider",
+      "type": "insurance",
+      "provider": "LifeGuard Assurance",
+      "description": "Provides a lump sum cash payment upon diagnosis of major illnesses, helping secure your family's future.",
+      "benefits": [
+        "Lump-sum payouts up to $100,000",
+        "Covers cancer, heart attack, stroke, etc.",
+        "Flexible premiums based on age"
+      ]
+    }
+  ]
+}

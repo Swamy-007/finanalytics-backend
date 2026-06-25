@@ -1,9 +1,6 @@
 import type { Request, Response } from "express";
 import { createRequire } from "module";
-import {
-  extractTransactionsAI,
-  generateInsights,
-} from "../services/aiService.js";
+import { extractTransactionsAI, generateInsights } from "../services/aiService.js";
 
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse");
