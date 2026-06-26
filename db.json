@@ -1,7 +1,119 @@
 {
   "users": {
     "subrahmanyam2@gmail.com": {
-      "cases": []
+      "cases": [
+        {
+          "id": "case_1782430953612_6pyfp",
+          "productId": "prod_high_yield_savings",
+          "status": "Recommended",
+          "reasoning": "The Apex High Yield Savings account can help increase the savings rate by offering a higher interest rate on savings, which is beneficial for building an emergency fund or saving for specific goals like education expenses.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-26T02:15:16.555Z"
+        },
+        {
+          "id": "case_1782430953613_6nxbr",
+          "productId": "prod_premium_health_insurance",
+          "status": "Recommended",
+          "reasoning": "Given the family composition, including two children, a comprehensive health insurance plan like Shield Pro Premium Family Health can provide peace of mind and protect against significant medical expenses.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-26T02:15:16.555Z"
+        },
+        {
+          "id": "case_1782430953613_q3kbx",
+          "productId": "prod_debt_consolidation_loan",
+          "status": "Recommended",
+          "reasoning": "To consolidate high-interest debt into a single, lower APR loan with a manageable monthly payment.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-26T01:56:12.557Z"
+        },
+        {
+          "id": "case_1782430953613_0ybho",
+          "productId": "prod_growth_index_fund",
+          "status": "Recommended",
+          "reasoning": "The Vanguard Growth Index Portfolio can be a suitable investment option for long-term wealth accumulation, considering the family's age and income level. It offers a low-cost way to diversify investments.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-26T02:15:16.555Z"
+        }
+      ],
+      "profile": {
+        "firstName": "test",
+        "lastName": "test",
+        "address": "test",
+        "phone": "1234567890",
+        "email": "subrahmanyam2@gmail.com",
+        "ageRange": "26-35",
+        "familyMembers": [
+          {
+            "name": "test",
+            "relationship": "spouse",
+            "ageRange": "26-35"
+          },
+          {
+            "name": "kid1",
+            "relationship": "child",
+            "ageRange": "6-12"
+          },
+          {
+            "name": "kdi2",
+            "relationship": "child",
+            "ageRange": "6-12"
+          }
+        ],
+        "dependents": []
+      },
+      "financialData": {
+        "assets": [
+          {
+            "name": "CB1",
+            "type": "savings",
+            "value": 15000
+          }
+        ],
+        "liabilities": [
+          {
+            "name": "mortagage",
+            "type": "mortgage",
+            "value": 500000,
+            "monthlyPayment": 0
+          },
+          {
+            "name": "de",
+            "type": "credit_card",
+            "value": 500,
+            "monthlyPayment": 0
+          }
+        ],
+        "primaryYearlyIncome": 140000,
+        "familyYearlyIncome": 0,
+        "expenditures": [
+          {
+            "type": "credit_card",
+            "description": "",
+            "monthlyAmount": 1800
+          }
+        ],
+        "savings": [
+          {
+            "type": "401k",
+            "description": "",
+            "monthlyContribution": 500
+          }
+        ]
+      },
+      "aiAnalysis": {
+        "score": 82,
+        "debtRatio": 3.23,
+        "savingsRatio": 4.3,
+        "gaps": [
+          "Expenditure-to-income ratio of 15.4% is relatively low, indicating potential for increased savings or investments.",
+          "The current savings rate of 4.3% could be improved to build a more substantial emergency fund and achieve long-term financial goals.",
+          "The absence of any mentioned retirement savings beyond the $500 monthly 401k contribution may not be sufficient for long-term retirement goals, considering the age and family composition.",
+          "The family's reliance on a single income source ($140,000) may expose them to risk in the event of job loss or reduced income, suggesting a need for income protection or diversification strategies.",
+          "There is no mention of education savings for the children, which could be a significant future expense."
+        ],
+        "advice": "Given the relatively low expenditure-to-income ratio, it's advisable to allocate a larger portion of the income towards savings and investments. Increasing the 401k contribution or exploring other retirement savings options could enhance long-term financial security. Considering the family composition, prioritizing savings for the children's education and exploring insurance products to protect against unforeseen medical expenses or income loss could be beneficial. The 50/30/20 rule suggests allocating 50% of the income towards necessary expenses, 30% towards discretionary spending, and 20% towards saving and debt repayment. Currently, the family's expenditure ratio is below 50%, indicating potential for increased savings and investments.",
+        "updatedAt": "2026-06-26T02:15:16.555Z"
+      }
     },
     "test1@test.com": {
       "cases": [

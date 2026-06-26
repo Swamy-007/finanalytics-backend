@@ -161,15 +161,15 @@ router.post("/financial-data", verifyAnyToken, async (req: AuthenticatedRequest,
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { assets, liabilities, monthlyCreditCardBills, monthlySavings, insuranceExpenses, otherRecurringCommitments } = req.body;
+    const { assets, liabilities, primaryYearlyIncome, familyYearlyIncome, expenditures, savings } = req.body;
 
     const financialData: FinancialData = {
       assets: assets || [],
       liabilities: liabilities || [],
-      monthlyCreditCardBills: Number(monthlyCreditCardBills) || 0,
-      monthlySavings: Number(monthlySavings) || 0,
-      insuranceExpenses: Number(insuranceExpenses) || 0,
-      otherRecurringCommitments: Number(otherRecurringCommitments) || 0
+      primaryYearlyIncome: Number(primaryYearlyIncome) || 0,
+      familyYearlyIncome: Number(familyYearlyIncome) || 0,
+      expenditures: Array.isArray(expenditures) ? expenditures : [],
+      savings: Array.isArray(savings) ? savings : [],
     };
 
     const updated = await updateUserData(email, { financialData });
