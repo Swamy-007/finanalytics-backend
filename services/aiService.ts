@@ -93,11 +93,26 @@ ${text}`;
 export const generateInsights = async (
   transactions: Transaction[]
 ): Promise<string> => {
-  const userMessage = `You are a financial assistant. Analyze the following credit card transactions and provide:
-- Top spending categories (with amounts)
-- Saving tips
-- Unusual spending observations
-- Prediction of next month's spending based on current trends
+  const userMessage = `You are a financial assistant. Analyze the following credit card transactions and respond using EXACTLY this markdown structure — use ### headings and * bullet points:
+
+### Top Categories
+* Category: $amount (X% of total)
+(list all categories with totals)
+
+### Saving Tips
+* Actionable tip based on the data
+
+### Unusual Spending & Observations
+* Any anomalies or notable patterns
+
+### Recommendations
+* Specific next-step advice
+
+Rules:
+- Use ### for section headings (no other heading levels)
+- Use * for bullet points
+- Include dollar amounts where relevant
+- Keep each section concise (3-5 bullets)
 
 Transactions:
 ${JSON.stringify(transactions)}`;
@@ -134,26 +149,61 @@ export const generateFinancialAnalysisAI = async (
   data: FinancialData,
   products: Product[]
 ): Promise<FinancialAnalysisResult> => {
-  const userMessage = `You are an expert AI Financial Advisor and Product Matcher. Analyze the following user profile and financial data, and match them with the available products catalog.
+  const totalYearlyIncome = (data.primaryYearlyIncome || 0) + (data.familyYearlyIncome || 0);
+  const totalMonthlyExpenditure = (data.expenditures || []).reduce((s, e) => s + e.monthlyAmount, 0);
+  const totalMonthlySavings = (data.savings || []).reduce((s, sv) => s + sv.monthlyContribution, 0);
+  const annualExpenditure = totalMonthlyExpenditure * 12;
+  const annualSavings = totalMonthlySavings * 12;
+  const expenditureToIncomeRatio = totalYearlyIncome > 0 ? ((annualExpenditure / totalYearlyIncome) * 100).toFixed(1) : "N/A";
+  const savingsRate = totalYearlyIncome > 0 ? ((annualSavings / totalYearlyIncome) * 100).toFixed(1) : "N/A";
 
-User Profile:
-${JSON.stringify(profile, null, 2)}
+  const familySummary = [
+    ...(profile.familyMembers || []).map(m => `${m.relationship} (${m.ageRange})`),
+    ...(profile.dependents || []).map(d => `${d.relationship} dependent (${d.ageRange})`),
+  ].join(", ") || "None declared";
 
-Financial Data:
-${JSON.stringify(data, null, 2)}
+  const userMessage = `You are an expert AI Financial Advisor and Product Matcher. Analyze the user profile and financial data below, then recommend products from the catalog.
 
-Available Products Catalog:
+## User Profile
+- Name: ${profile.firstName} ${profile.lastName}
+- Age Range: ${profile.ageRange}
+- Family members: ${familySummary}
+
+## Income
+- Primary Yearly Income: $${data.primaryYearlyIncome?.toLocaleString() ?? 0}
+- Family / Household Yearly Income: $${data.familyYearlyIncome?.toLocaleString() ?? 0}
+- Combined Yearly Income: $${totalYearlyIncome.toLocaleString()}
+
+## Monthly Expenditures
+${(data.expenditures || []).map(e => `- ${e.type} | ${e.description}: $${e.monthlyAmount}/mo`).join("\n") || "None entered"}
+- Total Monthly Expenditure: $${totalMonthlyExpenditure.toLocaleString()}/mo
+- Annual Expenditure: $${annualExpenditure.toLocaleString()}
+- Expenditure-to-Income Ratio: ${expenditureToIncomeRatio}%
+
+## Monthly Savings
+${(data.savings || []).map(s => `- ${s.type} | ${s.description}: $${s.monthlyContribution}/mo`).join("\n") || "None entered"}
+- Total Monthly Savings: $${totalMonthlySavings.toLocaleString()}/mo
+- Annual Savings: $${annualSavings.toLocaleString()}
+- Savings Rate: ${savingsRate}%
+
+## Assets
+${JSON.stringify(data.assets, null, 2)}
+
+## Liabilities
+${JSON.stringify(data.liabilities, null, 2)}
+
+## Available Products Catalog
 ${JSON.stringify(products, null, 2)}
 
-Based on this information:
-1. Calculate a financial health score (0-100).
-2. Estimate the debt-to-assets ratio as a percentage (0-100).
-3. Estimate the savings ratio as a percentage (0-100).
-4. Identify 3-5 specific gaps in their financial health.
-5. Provide detailed actionable personalized advice.
-6. Recommend 1-4 products from the catalog with specific reasoning.
+## Instructions
+1. Calculate a financial health score (0-100) using income, expenditure ratio, savings rate, and debt load.
+2. Estimate debt-to-assets ratio as a percentage (0-100).
+3. Estimate savings ratio as a percentage (0-100) — use the savings rate above.
+4. Identify 3-5 specific gaps. MUST reference actual income vs expenditure numbers (e.g. "Expenditure-to-income ratio of ${expenditureToIncomeRatio}% exceeds the recommended 50% threshold").
+5. Give detailed, actionable advice grounded in the income vs expenditure gap and the 50/30/20 rule.
+6. Recommend 1-4 products from the catalog. PRIMARY driver for product TYPE must be family composition and age groups (e.g. children → education plan, elderly dependents → long-term care, no dependents → growth investment). SECONDARY driver is income vs expenditure gap (e.g. high expenditure ratio → debt consolidation first).
 
-Return ONLY a valid JSON object matching this structure (no markdown, no extra text):
+Return ONLY a valid JSON object (no markdown, no extra text):
 {
   "score": number,
   "debtRatio": number,

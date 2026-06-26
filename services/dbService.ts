@@ -42,13 +42,25 @@ export interface Liability {
   monthlyPayment: number;
 }
 
+export interface Expenditure {
+  type: "credit_card" | "insurance" | "other";
+  description: string;
+  monthlyAmount: number;
+}
+
+export interface Saving {
+  type: "401k" | "ira" | "emergency" | "investment" | "other";
+  description: string;
+  monthlyContribution: number;
+}
+
 export interface FinancialData {
   assets: Asset[];
   liabilities: Liability[];
-  monthlyCreditCardBills: number;
-  monthlySavings: number;
-  insuranceExpenses: number;
-  otherRecurringCommitments: number;
+  primaryYearlyIncome: number;
+  familyYearlyIncome: number;
+  expenditures: Expenditure[];
+  savings: Saving[];
 }
 
 export interface Case {

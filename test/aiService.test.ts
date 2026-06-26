@@ -58,10 +58,10 @@ const mockProfile: UserProfile = {
 const mockFinancialData: FinancialData = {
   assets: [{ name: "Savings", type: "savings", value: 20000 }],
   liabilities: [{ name: "Car Loan", type: "loan", value: 5000, monthlyPayment: 300 }],
-  monthlyCreditCardBills: 500,
-  monthlySavings: 800,
-  insuranceExpenses: 100,
-  otherRecurringCommitments: 200,
+  primaryYearlyIncome: 80000,
+  familyYearlyIncome: 0,
+  expenditures: [{ type: "credit_card", description: "Visa", monthlyAmount: 500 }],
+  savings: [{ type: "401k", description: "Employer 401k", monthlyContribution: 800 }],
 };
 
 const mockProducts: Product[] = [
