@@ -120,7 +120,11 @@ router.post("/auth/sync", verifyAnyToken, async (req: AuthenticatedRequest, res:
     // Google OAuth tokens carry a numeric sub (~21 chars).
     const loginMethod = id.length < 30 ? "google" : "email";
     await upsertUserLogin({ uniqueId: id, email, name, loginMethod });
-    res.json({ ok: true, isAdmin: isAdmin(email) });
+    // Issue a fresh session token for ALL users (Google + email/password).
+    // Google ID tokens expire in 1 hour; this gives all users a 7-day token
+    // so subsequent API calls never hit a token-expiry 401.
+    const sessionToken = issueSessionToken(id, email, name);
+    res.json({ ok: true, isAdmin: isAdmin(email), sessionToken });
   } catch (err: any) {
     // Never block the user — sheets sync failure is non-fatal
     console.error("[auth/sync] error:", err.message);
