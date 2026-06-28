@@ -14,10 +14,24 @@ import type {
 } from "../services/dbService.js";
 import { generateFinancialAnalysisAI } from "../services/aiService.js";
 import { registerUser, loginUser } from "../services/userService.js";
+import {
+  upsertUserLogin,
+  saveFinancialDataToSheet,
+  loadFinancialDataFromSheet,
+} from "../services/googleSheetsService.js";
 import { authLog } from "../utils/authLogger.js";
 import { issueSessionToken } from "../utils/sessionToken.js";
 
 const router = express.Router();
+
+function isAdmin(email: string | undefined): boolean {
+  if (!email) return false;
+  const allowed = (process.env.ADMIN_USER_IDS ?? "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+  return allowed.includes(email.toLowerCase());
+}
 
 function clientIp(req: Request): string {
   return (
@@ -97,6 +111,23 @@ router.post("/users/login", async (req: Request, res: Response) => {
   }
 });
 
+// POST /auth/sync — called by frontend on every login (Google OAuth or email/password)
+// Records the login in Google Sheets for audit and data-persistence purposes.
+router.post("/auth/sync", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id, email, name } = req.user!;
+    // Email/password session tokens carry a UUID id (36 chars).
+    // Google OAuth tokens carry a numeric sub (~21 chars).
+    const loginMethod = id.length < 30 ? "google" : "email";
+    await upsertUserLogin({ uniqueId: id, email, name, loginMethod });
+    res.json({ ok: true, isAdmin: isAdmin(email) });
+  } catch (err: any) {
+    // Never block the user — sheets sync failure is non-fatal
+    console.error("[auth/sync] error:", err.message);
+    res.json({ ok: false, isAdmin: false, warning: "Sheets sync failed but login is valid." });
+  }
+});
+
 // Get User Profile
 router.get("/users/profile", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -114,10 +145,8 @@ router.get("/users/profile", verifyAnyToken, async (req: AuthenticatedRequest, r
 // Update User Profile
 router.put("/users/profile", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const email = req.user?.email;
-    if (!email) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    const { id, email } = req.user!;
+    if (!email) return res.status(401).json({ error: "Unauthorized" });
 
     const { firstName, lastName, address, phone, ageRange, familyMembers, dependents } = req.body;
 
@@ -126,26 +155,40 @@ router.put("/users/profile", verifyAnyToken, async (req: AuthenticatedRequest, r
       lastName: lastName || "",
       address: address || "",
       phone: phone || "",
-      email: email,
+      email,
       ageRange: ageRange || "",
       familyMembers: familyMembers || [],
-      dependents: dependents || []
+      dependents: dependents || [],
     };
 
     const updated = await updateUserData(email, { profile });
+
+    // Persist profile to Google Sheets (fire-and-forget — non-fatal)
+    saveFinancialDataToSheet({ uniqueId: id, email, profile }).catch(err =>
+      console.error("[apiRoutes] profile sheets sync failed:", err.message)
+    );
+
     res.json(updated.profile);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get Financial Data
+// Get Financial Data — tries Google Sheets first, falls back to db.json
 router.get("/financial-data", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const email = req.user?.email;
-    if (!email) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (!email) return res.status(401).json({ error: "Unauthorized" });
+
+    // Primary: Google Sheets
+    const sheetsData = await loadFinancialDataFromSheet(email);
+    if (sheetsData?.financialData) {
+      console.log(`[financial-data GET] serving from Google Sheets for ${email}`);
+      res.json(sheetsData.financialData);
+      return;
     }
+
+    // Fallback: db.json
     const data = await getUserData(email);
     res.json(data.financialData || null);
   } catch (err: any) {
@@ -153,13 +196,11 @@ router.get("/financial-data", verifyAnyToken, async (req: AuthenticatedRequest, 
   }
 });
 
-// Save/Update Financial Data
+// Save/Update Financial Data — writes to db.json AND Google Sheets
 router.post("/financial-data", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const email = req.user?.email;
-    if (!email) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    const { id, email } = req.user!;
+    if (!email) return res.status(401).json({ error: "Unauthorized" });
 
     const { assets, liabilities, primaryYearlyIncome, familyYearlyIncome, expenditures, savings } = req.body;
 
@@ -173,6 +214,12 @@ router.post("/financial-data", verifyAnyToken, async (req: AuthenticatedRequest,
     };
 
     const updated = await updateUserData(email, { financialData });
+
+    // Mirror to Google Sheets (fire-and-forget — non-fatal)
+    saveFinancialDataToSheet({ uniqueId: id, email, financialData }).catch(err =>
+      console.error("[apiRoutes] financial-data sheets sync failed:", err.message)
+    );
+
     res.json(updated.financialData);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -188,10 +235,16 @@ router.get("/analysis", verifyAnyToken, async (req: AuthenticatedRequest, res: R
     }
 
     const userData = await getUserData(email);
-    if (!userData.profile) {
+
+    // Prefer Sheets data when configured (same source as GET /financial-data)
+    const sheetsData = await loadFinancialDataFromSheet(email);
+    const profile       = (sheetsData?.profile       as UserProfile | undefined) ?? userData.profile;
+    const financialData = (sheetsData?.financialData as FinancialData | undefined) ?? userData.financialData;
+
+    if (!profile) {
       return res.status(400).json({ error: "Please complete your User Profile first before running AI analysis." });
     }
-    if (!userData.financialData) {
+    if (!financialData) {
       return res.status(400).json({ error: "Please complete your Financial Profile first before running AI analysis." });
     }
 
@@ -199,10 +252,9 @@ router.get("/analysis", verifyAnyToken, async (req: AuthenticatedRequest, res: R
     const products = db.products;
 
     console.log(`Running AI financial analysis for ${email}...`);
-    // Run AI analysis
     const analysisResult = await generateFinancialAnalysisAI(
-      userData.profile,
-      userData.financialData,
+      profile,
+      financialData,
       products
     );
 
@@ -351,12 +403,9 @@ router.post("/applications", verifyAnyToken, async (req: AuthenticatedRequest, r
 router.get("/admin/users", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const email = req.user?.email;
-    if (!email) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    
-    // Basic verification: Let any authenticated user access user details for this prototype,
-    // or restrict to a specific admin email if needed. Let's make it open to show capability.
+    if (!email) return res.status(401).json({ error: "Unauthorized" });
+    if (!isAdmin(email)) return res.status(403).json({ error: "Forbidden: Admin access required" });
+
     const db = await readDB();
     const userSummary = Object.keys(db.users).map(emailKey => {
       const u = db.users[emailKey];
@@ -384,8 +433,10 @@ router.get("/admin/users", verifyAnyToken, async (req: AuthenticatedRequest, res
   }
 });
 
-router.get("/admin/analytics", verifyAnyToken, async (_req: AuthenticatedRequest, res: Response) => {
+router.get("/admin/analytics", verifyAnyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
+    if (!isAdmin(req.user?.email)) return res.status(403).json({ error: "Forbidden: Admin access required" });
+
     const db = await readDB();
     
     let totalUsers = Object.keys(db.users).length;

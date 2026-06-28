@@ -18,16 +18,36 @@ export type FinancialAnalysisResult = {
   productRecommendations: { productId: string; reasoning: string }[];
 };
 
-//const MODEL = "google/gemma-4-31b-it";
-const MODEL="meta/llama-3.3-70b-instruct";
+const MODEL = process.env.AI_MODEL ?? "meta/llama-3.3-70b-instruct";
 const REQUEST_TIMEOUT_MS = 120_000; // 2 minutes
 
-const client = new OpenAI({
-  baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_API_KEY,
-  timeout: REQUEST_TIMEOUT_MS,
-  maxRetries: 0, // no retry — timeout once at 2 min, not 4 min
-});
+// Lazy singleton — defer construction until first call so a missing
+// NVIDIA_API_KEY does NOT crash the process at startup (Cloud Run startup
+// failure was caused by OpenAI SDK throwing synchronously when apiKey is
+// undefined at module import time).
+let _client: OpenAI | null = null;
+function getClient(): OpenAI {
+  if (!_client) {
+    const apiKey = process.env.NVIDIA_API_KEY;
+    const baseURL = process.env.AI_BASE_URL;
+    if (!apiKey) {
+      console.error("[aiService] NVIDIA_API_KEY is not set. AI features will be unavailable.");
+      throw new Error("NVIDIA_API_KEY environment variable is not configured.");
+    }
+    if (!baseURL) {
+      console.error("[aiService] AI_BASE_URL is not set. AI features will be unavailable.");
+      throw new Error("AI_BASE_URL environment variable is not configured.");
+    }
+    console.log(`[aiService] Initializing AI client — baseURL=${baseURL} model=${MODEL}`);
+    _client = new OpenAI({
+      baseURL,
+      apiKey,
+      timeout: REQUEST_TIMEOUT_MS,
+      maxRetries: 0,
+    });
+  }
+  return _client;
+}
 
 async function callAI(
   messages: OpenAI.Chat.ChatCompletionMessageParam[],
@@ -36,7 +56,7 @@ async function callAI(
 ): Promise<string> {
   console.log(`[${label}] model=${MODEL} max_tokens=${maxTokens} prompt_chars=${JSON.stringify(messages).length}`);
   const start = Date.now();
-  const completion = await client.chat.completions.create({
+  const completion = await getClient().chat.completions.create({
     model: MODEL,
     messages,
     temperature: 0.7,

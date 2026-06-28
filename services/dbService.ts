@@ -4,7 +4,10 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_PATH = path.join(__dirname, "../db.json");
+
+export const dbConfig = {
+  dbPath: path.join(__dirname, "../db.json"),
+};
 
 export interface FamilyMember {
   name: string;
@@ -145,7 +148,7 @@ const DEFAULT_PRODUCTS: Product[] = [
 
 export async function readDB(): Promise<DatabaseSchema> {
   try {
-    const data = await fs.readFile(DB_PATH, "utf-8");
+    const data = await fs.readFile(dbConfig.dbPath, "utf-8");
     const parsed = JSON.parse(data);
     
     // Ensure structure is correct
@@ -166,7 +169,7 @@ export async function readDB(): Promise<DatabaseSchema> {
 }
 
 export async function writeDB(db: DatabaseSchema): Promise<void> {
-  await fs.writeFile(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+  await fs.writeFile(dbConfig.dbPath, JSON.stringify(db, null, 2), "utf-8");
 }
 
 export async function getUserData(email: string): Promise<UserData> {
