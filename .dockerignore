@@ -1,0 +1,17 @@
+# Never bake secrets or local config into the image
+.env
+.env.*
+
+# Dev artifacts
+node_modules
+dist
+uploads
+
+# Test files
+test
+test-nvidia.ts
+*.test.ts
+
+# Misc
+.git
+*.md

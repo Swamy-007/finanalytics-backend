@@ -4,12 +4,16 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 RUN npm run build
 
-EXPOSE 8282
+# Remove dev dependencies after build to keep image lean
+RUN npm prune --production
 
-CMD ["npm", "start"]
+# Cloud Run injects PORT=8080 at runtime
+EXPOSE 8080
+
+CMD ["node", "dist/app.js"]

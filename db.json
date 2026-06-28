@@ -14,25 +14,25 @@
           "id": "case_1782430953613_6nxbr",
           "productId": "prod_premium_health_insurance",
           "status": "Recommended",
-          "reasoning": "Given the family composition, including two children, a comprehensive health insurance plan like Shield Pro Premium Family Health can provide peace of mind and protect against significant medical expenses.",
+          "reasoning": "Given the family composition, including a spouse and two children, a comprehensive health insurance plan is essential to protect against medical expenses. The Shield Pro Premium Family Health plan offers low deductibles, full spouse and dependent coverage, and additional benefits like dental, vision, and prescription coverage.",
           "applicationDetails": null,
-          "updatedAt": "2026-06-26T02:15:16.555Z"
+          "updatedAt": "2026-06-26T03:59:18.116Z"
         },
         {
           "id": "case_1782430953613_q3kbx",
           "productId": "prod_debt_consolidation_loan",
           "status": "Recommended",
-          "reasoning": "To consolidate high-interest debt into a single, lower APR loan with a manageable monthly payment.",
+          "reasoning": "Although the credit card debt is relatively low, using a debt consolidation loan like the Pathfinder Debt Consolidation Loan could help simplify payments and potentially reduce interest rates, making it easier to manage debt and free up more money for savings and investments.",
           "applicationDetails": null,
-          "updatedAt": "2026-06-26T01:56:12.557Z"
+          "updatedAt": "2026-06-26T03:59:18.116Z"
         },
         {
           "id": "case_1782430953613_0ybho",
           "productId": "prod_growth_index_fund",
           "status": "Recommended",
-          "reasoning": "The Vanguard Growth Index Portfolio can be a suitable investment option for long-term wealth accumulation, considering the family's age and income level. It offers a low-cost way to diversify investments.",
+          "reasoning": "The Vanguard Growth Index Portfolio can help the family grow their wealth over the long term, taking advantage of the power of compounding. With a low expense ratio and broad diversification, this investment aligns with the family's potential long-term goals, such as funding their children's education or retirement.",
           "applicationDetails": null,
-          "updatedAt": "2026-06-26T02:15:16.555Z"
+          "updatedAt": "2026-06-26T03:59:18.116Z"
         }
       ],
       "profile": {
@@ -101,18 +101,18 @@
         ]
       },
       "aiAnalysis": {
-        "score": 82,
-        "debtRatio": 3.23,
+        "score": 80,
+        "debtRatio": 3.17,
         "savingsRatio": 4.3,
         "gaps": [
           "Expenditure-to-income ratio of 15.4% is relatively low, indicating potential for increased savings or investments.",
-          "The current savings rate of 4.3% could be improved to build a more substantial emergency fund and achieve long-term financial goals.",
-          "The absence of any mentioned retirement savings beyond the $500 monthly 401k contribution may not be sufficient for long-term retirement goals, considering the age and family composition.",
-          "The family's reliance on a single income source ($140,000) may expose them to risk in the event of job loss or reduced income, suggesting a need for income protection or diversification strategies.",
-          "There is no mention of education savings for the children, which could be a significant future expense."
+          "Savings rate of 4.3% is lower than recommended, suggesting a need to allocate more funds towards long-term goals.",
+          "No explicit emergency fund mentioned, which could leave the family vulnerable to unexpected expenses.",
+          "Credit card debt of $500 may indicate a need for debt management strategies.",
+          "No retirement savings beyond the $500/month 401k contribution, which may not be sufficient for long-term retirement goals."
         ],
-        "advice": "Given the relatively low expenditure-to-income ratio, it's advisable to allocate a larger portion of the income towards savings and investments. Increasing the 401k contribution or exploring other retirement savings options could enhance long-term financial security. Considering the family composition, prioritizing savings for the children's education and exploring insurance products to protect against unforeseen medical expenses or income loss could be beneficial. The 50/30/20 rule suggests allocating 50% of the income towards necessary expenses, 30% towards discretionary spending, and 20% towards saving and debt repayment. Currently, the family's expenditure ratio is below 50%, indicating potential for increased savings and investments.",
-        "updatedAt": "2026-06-26T02:15:16.555Z"
+        "advice": "Consider allocating 50% of income towards necessary expenses, 30% towards discretionary spending, and 20% towards saving and debt repayment. Increase savings rate, explore tax-advantaged retirement accounts, and develop a debt management plan. With a family composition including a spouse and two children, prioritize insurance products that provide comprehensive coverage and consider investment products that align with long-term financial goals.",
+        "updatedAt": "2026-06-26T03:59:18.116Z"
       }
     },
     "test1@test.com": {
@@ -179,6 +179,222 @@
         ],
         "advice": "Consider allocating a portion of your savings to an emergency fund, explore low-cost investment options, and evaluate insurance products to protect against unforeseen events. Since you have no debt, focus on building wealth and securing your financial future.",
         "updatedAt": "2026-06-25T02:38:04.423Z"
+      }
+    },
+    "psswamy007@gmail.com": {
+      "cases": [
+        {
+          "id": "case_1782673360467_yr3yq",
+          "productId": "prod_high_yield_savings",
+          "status": "Accepted",
+          "reasoning": "Given the relatively low expenditure-to-income ratio, allocating excess funds to a high-yield savings account can help maximize return on cash and build an easily accessible savings buffer.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T19:34:47.634Z"
+        },
+        {
+          "id": "case_1782673360467_2szeb",
+          "productId": "prod_premium_health_insurance",
+          "status": "Accepted",
+          "reasoning": "Considering the family composition and age, upgrading to a premium health insurance plan that covers spouse and potential dependents can provide comprehensive protection against medical expenses.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T19:34:26.077Z"
+        },
+        {
+          "id": "case_1782673360467_0vwo0",
+          "productId": "prod_debt_consolidation_loan",
+          "status": "Accepted",
+          "reasoning": "To address the high-interest credit card debt, a debt consolidation loan with a lower fixed APR can help reduce monthly payments and simplify debt management.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T19:34:49.356Z"
+        },
+        {
+          "id": "case_1782673360467_o90f1",
+          "productId": "prod_growth_index_fund",
+          "status": "Recommended",
+          "reasoning": "Given the age group and relatively stable financial situation, investing in a growth index fund can be a suitable long-term strategy for wealth accumulation, aiming to grow savings beyond the current rate.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T19:23:10.445Z"
+        }
+      ],
+      "profile": {
+        "firstName": "swamy",
+        "lastName": "pilli",
+        "address": "",
+        "phone": "1231231234",
+        "email": "psswamy007@gmail.com",
+        "ageRange": "26-35",
+        "familyMembers": [
+          {
+            "name": "m1",
+            "relationship": "spouse",
+            "ageRange": "26-35"
+          }
+        ],
+        "dependents": []
+      },
+      "financialData": {
+        "assets": [
+          {
+            "name": "s1",
+            "type": "savings",
+            "value": 10000
+          }
+        ],
+        "liabilities": [
+          {
+            "name": "m1",
+            "type": "loan",
+            "value": 500000,
+            "monthlyPayment": 2000
+          }
+        ],
+        "primaryYearlyIncome": 140000,
+        "familyYearlyIncome": 0,
+        "expenditures": [
+          {
+            "type": "insurance",
+            "description": "",
+            "monthlyAmount": 300
+          },
+          {
+            "type": "credit_card",
+            "description": "",
+            "monthlyAmount": 1200
+          }
+        ],
+        "savings": [
+          {
+            "type": "401k",
+            "description": "",
+            "monthlyContribution": 500
+          }
+        ]
+      },
+      "aiAnalysis": {
+        "score": 80,
+        "debtRatio": 50,
+        "savingsRatio": 4.3,
+        "gaps": [
+          "Expenditure-to-income ratio of 12.9% is relatively low, indicating potential for increased savings or investments.",
+          "Savings rate of 4.3% is below the recommended 10% to 20% threshold for long-term financial security.",
+          "High-interest credit card debt, as indicated by $1200/mo credit card expenditure, may benefit from debt consolidation.",
+          "No clear indication of retirement savings beyond the $500/mo 401k contribution, which may not be sufficient for long-term goals.",
+          "Potential gap in insurance coverage, as current insurance expenditure is $300/mo, which may not be adequate for comprehensive family protection."
+        ],
+        "advice": "Consider allocating a larger portion of income towards savings and investments, aiming for a 10% to 20% savings rate. Review and adjust insurance coverage to ensure comprehensive protection for the family. Debt consolidation may be beneficial to reduce high-interest credit card debt. Lastly, explore additional retirement savings options beyond the current 401k contribution to ensure long-term financial security.",
+        "updatedAt": "2026-06-28T19:23:10.445Z"
+      }
+    },
+    "swamy.p@hotmail.com": {
+      "cases": [
+        {
+          "id": "case_1782617618958_49kxt",
+          "productId": "prod_debt_consolidation_loan",
+          "status": "Recommended",
+          "reasoning": "The debt consolidation loan can help simplify the monthly payments and potentially reduce the interest rate on the existing debt of $500,000, making it more manageable given the current financial situation.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T03:59:42.467Z"
+        },
+        {
+          "id": "case_1782617618958_87xu9",
+          "productId": "prod_premium_health_insurance",
+          "status": "Recommended",
+          "reasoning": "Given the presence of a child and spouse, comprehensive family health insurance is a priority to protect against medical expenses.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T04:01:31.016Z"
+        },
+        {
+          "id": "case_1782617618958_0rl6j",
+          "productId": "prod_high_yield_savings",
+          "status": "Recommended",
+          "reasoning": "Although the current income is $0, once income is generated, it's essential to start building an easily accessible savings fund to cover 3-6 months of expenses, and a high-yield savings account can provide a safe and liquid option for this purpose.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T03:58:56.325Z"
+        },
+        {
+          "id": "case_1782619182467_0lyjd",
+          "productId": "prod_critical_illness_insurance",
+          "status": "Recommended",
+          "reasoning": "Considering the age range and family composition, critical illness insurance can provide an additional layer of financial protection against major illnesses.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T04:01:31.016Z"
+        },
+        {
+          "id": "case_1782619291016_bksql",
+          "productId": "prod_growth_index_fund",
+          "status": "Recommended",
+          "reasoning": "To address the low savings rate and lack of investment diversification, a low-cost index fund can provide a solid foundation for long-term wealth accumulation.",
+          "applicationDetails": null,
+          "updatedAt": "2026-06-28T04:01:31.016Z"
+        }
+      ],
+      "profile": {
+        "firstName": "swamy",
+        "lastName": "test",
+        "address": "131 Closson DR",
+        "phone": "1231231234",
+        "email": "swamy.p@hotmail.com",
+        "ageRange": "26-35",
+        "familyMembers": [
+          {
+            "name": "m1",
+            "relationship": "spouse",
+            "ageRange": "26-35"
+          },
+          {
+            "name": "kid",
+            "relationship": "child",
+            "ageRange": "6-12"
+          }
+        ],
+        "dependents": []
+      },
+      "financialData": {
+        "assets": [
+          {
+            "name": "ac1",
+            "type": "savings",
+            "value": 10000
+          }
+        ],
+        "liabilities": [
+          {
+            "name": "M1",
+            "type": "loan",
+            "value": 500000,
+            "monthlyPayment": 2000
+          }
+        ],
+        "primaryYearlyIncome": 140000,
+        "familyYearlyIncome": 0,
+        "expenditures": [
+          {
+            "type": "credit_card",
+            "description": "cr1",
+            "monthlyAmount": 800
+          }
+        ],
+        "savings": [
+          {
+            "type": "401k",
+            "description": "",
+            "monthlyContribution": 250
+          }
+        ]
+      },
+      "aiAnalysis": {
+        "score": 70,
+        "debtRatio": 50,
+        "savingsRatio": 2.1,
+        "gaps": [
+          "Expenditure-to-income ratio of 6.9% is relatively low but savings rate of 2.1% is below the recommended threshold",
+          "High-interest debt is not explicitly mentioned but the presence of a $500,000 loan with a $2,000 monthly payment suggests a need for debt management",
+          "No explicit retirement savings beyond the $250/month 401k contribution, which may not be sufficient for long-term goals",
+          "Lack of diversification in savings and investments, with only a $10,000 savings account and no other mentioned assets",
+          "Potential gap in insurance coverage, as only health insurance is mentioned and there is no mention of life insurance or other types of protection"
+        ],
+        "advice": "Consider allocating 50% of income towards necessary expenses, 30% towards discretionary spending, and 20% towards saving and debt repayment. Increase savings rate to at least 10-15% of income and explore options for reducing high-interest debt. Review insurance coverage to ensure adequate protection for spouse and child. Explore tax-advantaged retirement accounts and consider consulting a financial advisor for personalized guidance.",
+        "updatedAt": "2026-06-28T04:01:31.016Z"
       }
     }
   },
