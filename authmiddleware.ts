@@ -21,6 +21,19 @@ if (!googleClientId) {
 
 const client = new OAuth2Client(googleClientId);
 
+// Exported so apiRoutes can use it for the /auth/google-exchange endpoint
+// without duplicating the client setup.
+export async function verifyGoogleCredential(credential: string): Promise<TokenPayload | null> {
+  try {
+    const ticket = await client.verifyIdToken({ idToken: credential, audience: googleClientId! });
+    return ticket.getPayload() ?? null;
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : 'Verification failed';
+    console.error(`[GOOGLE_AUTH_FAILED] reason="${reason}"`);
+    return null;
+  }
+}
+
 const verifyGoogleToken = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -52,7 +65,7 @@ const verifyGoogleToken = async (
     // Verify token with Google
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: googleClientId
+      audience: googleClientId!
     });
 
     const payload: TokenPayload | undefined =
@@ -91,11 +104,10 @@ const verifyGoogleToken = async (
       req.socket.remoteAddress ||
       'unknown';
 
-    authLog({
-      event:  'GOOGLE_AUTH_FAILED',
-      ip,
-      reason: error instanceof Error ? error.message : 'Token verification failed',
-    });
+    const reason = error instanceof Error ? error.message : 'Token verification failed';
+    // Log at console.error so the exact reason is visible in Cloud Run logs
+    console.error(`[GOOGLE_AUTH_FAILED] ip=${ip} reason="${reason}"`);
+    authLog({ event: 'GOOGLE_AUTH_FAILED', ip, reason });
 
     res.status(401).json({
       error: 'Invalid or expired token'
