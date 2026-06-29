@@ -23,8 +23,35 @@ import axios from "axios";
 
 const SPREADSHEET_ID  = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 const CLIENT_EMAIL    = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
-// \n literals in .env must be expanded to real newlines
-const PRIVATE_KEY     = process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, "\n");
+
+// Normalise the private key regardless of how it was stored in Cloud Run:
+//   1. literal \n  (from .env files and Cloud Run UI copy-paste)
+//   2. CRLF line endings (Windows editors)
+//   3. Accidental surrounding quotes left from the .env value
+const PRIVATE_KEY = (() => {
+  const raw = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
+  if (!raw) return undefined;
+
+  let key = raw;
+
+  // Strip surrounding single or double quotes (sometimes pasted from .env accidentally)
+  if (/^['"][\s\S]*['"]$/.test(key)) {
+    key = key.slice(1, -1);
+  }
+
+  // Expand literal \n → real newlines, then normalise CRLF → LF
+  key = key.replace(/\\n/g, "\n").replace(/\r\n/g, "\n");
+
+  // Startup diagnostic — no key material logged, just shape info
+  const firstLine = key.split("\n")[0] ?? "";
+  console.log(
+    `[googleSheetsService] PRIVATE_KEY shape: length=${key.length}` +
+    ` startsWithBegin=${firstLine.startsWith("-----BEGIN")}` +
+    ` hasNewlines=${key.includes("\n")}`
+  );
+
+  return key;
+})();
 
 const SHEETS_BASE = "https://sheets.googleapis.com/v4/spreadsheets";
 
