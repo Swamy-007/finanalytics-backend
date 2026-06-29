@@ -1,6 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { verifyAnyToken } from "../authmiddleware.js";
+import { verifyAnyToken, verifyGoogleCredential } from "../authmiddleware.js";
 import type { AuthenticatedRequest } from "../authmiddleware.js";
 import {
   getUserData,
@@ -109,6 +109,34 @@ router.post("/users/login", async (req: Request, res: Response) => {
     authLog({ event: "LOGIN_FAILED", email: email?.trim(), ip, reason: msg });
     res.status(401).json({ error: msg });
   }
+});
+
+// POST /auth/google-exchange — no middleware; accepts Google credential in body and returns
+// a 7-day session token.  Separates Google verification from API-call authentication so
+// the short-lived Google token is NEVER used as a Bearer token for data requests.
+router.post("/auth/google-exchange", async (req: Request, res: Response) => {
+  const { credential } = req.body as { credential?: string };
+  if (!credential) {
+    res.status(400).json({ error: "Missing credential" });
+    return;
+  }
+  const payload = await verifyGoogleCredential(credential);
+  if (!payload) {
+    res.status(401).json({ error: "Invalid or expired Google credential" });
+    return;
+  }
+  const id    = payload.sub;
+  const email = payload.email ?? "";
+  const name  = payload.name  ?? "";
+
+  // Record login in Google Sheets (non-fatal)
+  upsertUserLogin({ uniqueId: id, email, name, loginMethod: "google" }).catch(err =>
+    console.error("[google-exchange] sheets sync failed:", err.message)
+  );
+
+  const sessionToken = issueSessionToken(id, email, name);
+  authLog({ event: "GOOGLE_AUTH_SUCCESS", email, name });
+  res.json({ sessionToken, email, name, isAdmin: isAdmin(email) });
 });
 
 // POST /auth/sync — called by frontend on every login (Google OAuth or email/password)
