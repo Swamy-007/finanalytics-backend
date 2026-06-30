@@ -10,11 +10,17 @@ import verifyGoogleToken from "./authmiddleware.js";
 const app = express();
 app.use(express.json());
 
-app.use(cors({
-  origin: ["https://finanalytics-frontend-1000076376022.northamerica-northeast2.run.app",
-    "https://finanalytics-frontend-app1-1000076376022.northamerica-northeast2.run.app",
-    "http://localhost:5173"],
+const corsOrigins = (process.env.CORS_ORIGINS ?? "")
+  .split(",")
+  .map(origin => origin.trim())
+  .filter(Boolean);
 
+if (corsOrigins.length === 0) {
+  console.error("[CORS] CORS_ORIGINS env var is missing or blank — no origins are allowed.");
+}
+
+app.use(cors({
+  origin: corsOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
