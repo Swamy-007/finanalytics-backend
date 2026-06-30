@@ -13,7 +13,7 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
 
 if (!googleClientId) {
   throw new Error('Missing GOOGLE_CLIENT_ID');
@@ -105,8 +105,22 @@ const verifyGoogleToken = async (
       'unknown';
 
     const reason = error instanceof Error ? error.message : 'Token verification failed';
-    // Log at console.error so the exact reason is visible in Cloud Run logs
-    console.error(`[GOOGLE_AUTH_FAILED] ip=${ip} reason="${reason}"`);
+
+    // Decode the token payload without verification to log the audience for diagnostics
+    if (reason.includes('audience')) {
+      try {
+        const raw = (req.headers.authorization as string).split(' ')[1] ?? '';
+        const payloadB64 = raw.split('.')[1] ?? '';
+        const payloadStr = Buffer.from(payloadB64, 'base64').toString('utf8');
+        const payloadObj = JSON.parse(payloadStr) as { aud?: unknown };
+        console.error(`[GOOGLE_AUTH_FAILED] ip=${ip} reason="${reason}" token_aud=${JSON.stringify(payloadObj.aud)} required_aud="${googleClientId}"`);
+      } catch {
+        console.error(`[GOOGLE_AUTH_FAILED] ip=${ip} reason="${reason}" (could not decode token)`);
+      }
+    } else {
+      console.error(`[GOOGLE_AUTH_FAILED] ip=${ip} reason="${reason}"`);
+    }
+
     authLog({ event: 'GOOGLE_AUTH_FAILED', ip, reason });
 
     res.status(401).json({

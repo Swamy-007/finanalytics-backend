@@ -114,7 +114,13 @@ router.post("/users/login", async (req: Request, res: Response) => {
 // POST /auth/google-exchange — no middleware; accepts Google credential in body and returns
 // a 7-day session token.  Separates Google verification from API-call authentication so
 // the short-lived Google token is NEVER used as a Bearer token for data requests.
+// Gated by ENABLE_GOOGLE_EXCHANGE=true so it can be rolled out independently of the
+// frontend flag VITE_USE_GOOGLE_EXCHANGE without affecting the existing prod flow.
 router.post("/auth/google-exchange", async (req: Request, res: Response) => {
+  if (process.env.ENABLE_GOOGLE_EXCHANGE !== "true") {
+    res.status(501).json({ error: "google-exchange is not enabled on this deployment" });
+    return;
+  }
   const { credential } = req.body as { credential?: string };
   if (!credential) {
     res.status(400).json({ error: "Missing credential" });
